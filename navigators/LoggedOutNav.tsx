@@ -4,13 +4,23 @@ import CreateAccount from "../screens/CreateAccount";
 import LogIn from "../screens/Login";
 import Welcome from "../screens/Welcome";
 
-const Stack = createStackNavigator();
+export type RootStackParamList = {
+  Welcome: undefined;
+  LogIn: undefined;
+  CreateAccount: undefined;
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
 
 export default function LoggedOutNav() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Welcome" component={Welcome} />
-      <Stack.Screen name="Login" component={LogIn} />
+      <Stack.Screen
+        name="Welcome"
+        component={Welcome}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen name="LogIn" component={LogIn} />
       <Stack.Screen name="CreateAccount" component={CreateAccount} />
     </Stack.Navigator>
   );

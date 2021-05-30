@@ -7,6 +7,7 @@ import * as Font from "expo-font";
 import { Asset } from "expo-asset";
 import LoggedOutNav from "./navigators/LoggedOutNav";
 import { NavigationContainer } from "@react-navigation/native";
+import { AppearanceProvider } from "react-native-appearance";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -31,8 +32,10 @@ export default function App() {
     );
   }
   return (
-    <NavigationContainer>
-      <LoggedOutNav />
-    </NavigationContainer>
+    <AppearanceProvider>
+      <NavigationContainer>
+        <LoggedOutNav />
+      </NavigationContainer>
+    </AppearanceProvider>
   );
 }

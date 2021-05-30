@@ -148,3 +148,127 @@ return (
   </NavigationContainer>
 );
 ```
+
+# #14.1 Moving Through Screens (09:06)
+
+## component rule: screen component will always get props: `navigation, route`
+
+## component mapper
+
+```js
+<View> = <div>
+<Text> = <span>
+```
+
+## 1. Create stack
+
+```ts
+// LoggedOutNav.tsx
+export type RootStackParamList = {
+  Welcome: undefined;
+  LogIn: undefined;
+  CreateAccount: undefined;
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
+```
+
+## 2. navigation.navigate
+
+```ts
+// Welcome.tsx
+type Props = {
+navigation: StackNavigationProp<RootStackParamList, "Welcome">;
+};
+
+export default function Welcome({ navigation }: Props) {
+return (
+<View>
+<Text>Welcome</Text>
+<TouchableOpacity onPress={() => navigation.navigate("CreateAccount")}>
+
+```
+
+# #14.2 Navigator Props (11:43)
+
+## https://reactnavigation.org/docs/stack-navigator/
+
+- Stack.Navigator(Global)
+  - `initialRouteName`
+  - `mode="modal"`: comes from bottom
+  - `headerMode="screen" | "float"(default)`
+  - `screenOptions: {headerBackTitleVisible: false}`: set options globally
+- Options(Indivisual screen): `options={{key: val}}`
+  - `title:"modifiedTitle"`: only for current screen
+  - `headerShown: false`
+  - `headerBackTitleVisible: false`
+
+# #14.3 Dark Mode (07:19)
+
+## https://docs.expo.io/versions/latest/sdk/appearance/
+
+```ts
+npm i styled-components
+npm i --save-dev @types/styled-components-react-native
+expo install react-native-appearance
+```
+
+## Add userInterfaceStyle
+
+```js
+// app.json
+{
+  "expo": {
+    ...
+    "userInterfaceStyle": "automatic",
+```
+
+## conver with `AppearanceProvider`
+
+```js
+// App.tsx
+return (
+  <AppearanceProvider>
+    <NavigationContainer>
+      <LoggedOutNav />
+    </NavigationContainer>
+  </AppearanceProvider>
+);
+```
+
+## Get the current color scheme once
+
+```js
+let colorScheme = Appearance.getColorScheme(); // "light" | "dark"
+```
+
+or
+
+```js
+let colorScheme = useColorScheme();
+```
+
+## subscript color change
+
+```js
+let subscription = Appearance.addChangeListener(({ colorScheme }) => {
+  // do something with color scheme
+});
+```
+
+# #14.4 Welcome Screen (10:05)
+
+## shared color file => Homework: later change it to theme
+
+```ts
+// touch color.ts
+export const colors = {
+  blue: "#0095F6",
+};
+```
+
+## give `headerShown: false` at LoggedOutNave.tsx
+
+## TS needs `@types/styled-components-react-native`
+
+## fontsize of styled component does not work at parent: use fontsize at the right child
