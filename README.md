@@ -50,3 +50,101 @@ git remote add origin https://github.com/devgony/instaclone-native
 - app.json: configure integration
 - splash: when we login
 - npm run start: web console
+
+# #13.5 Working with the Simulator (04:01)
+
+## simulator expo cannot connect?: update app
+
+# #13.6 AppLoading (10:06)
+
+```
+expo install expo-app-loading
+expo install expo-font
+```
+
+## @expo/vector-icons are default
+
+## we use ionicons
+
+## preload? app should be ready before user run
+
+- load font
+- cache stuff later
+
+```js
+const [loading, setLoading] = useState(true);
+const onFinish = () => setLoading(false);
+const preload = async () => {
+  const fontsToLoad = [Ionicons.font];
+  const fontPromises = fontsToLoad.map(font => Font.loadAsync(font));
+  console.log(fontPromises);
+  Promise.all(fontPromises);
+};
+if (loading) {
+  return (
+    <AppLoading
+      startAsync={preload}
+      onError={console.warn}
+      onFinish={onFinish}
+    />
+  );
+}
+```
+
+# #13.7 AppLoading part Two (05:36)
+
+```
+expo install expo-asset
+npm install @react-navigation/native
+expo install react-native-gesture-handler react-native-reanimated react-native-screens react-native-safe-area-context @react-native-community/masked-view
+npm install @react-navigation/stack
+```
+
+## preload logo
+
+## Promise.all<void | Asset[]>
+
+```js
+const imagesToLoad = [
+      require("./assets/logo.png"),
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/840px-Instagram_logo.svg.png",
+    ];
+    const imagePromises = imagesToLoad.map(image => Asset.loadAsync(image));
+    Promise.all<void | Asset[]>([...fontPromises, ...imagePromises]);
+```
+
+# #14.0 Your First Navigation (06:39)
+
+## React navigation - stack prototype: sequential nav
+
+```js
+mkdir screens navigators
+touch screens/Welcome.tsx
+touch screens/Login.tsx
+touch screens/CreateAccount.tsx
+touch navigators/LoggedOutNav.tsx
+
+// navigators/LoggedOutNav.tsx
+const Stack = createStackNavigator();
+
+export default function LoggedOutNav() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Welcome" component={Welcome} />
+      <Stack.Screen name="Login" component={LogIn} />
+      <Stack.Screen name="CreateAccount" component={CreateAccount} />
+    </Stack.Navigator>
+  );
+}
+```
+
+## should be covered with NavigationContainer
+
+```js
+// App.tsx
+return (
+  <NavigationContainer>
+    <LoggedOutNav />
+  </NavigationContainer>
+);
+```
