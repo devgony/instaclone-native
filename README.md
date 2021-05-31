@@ -272,3 +272,71 @@ export const colors = {
 ## TS needs `@types/styled-components-react-native`
 
 ## fontsize of styled component does not work at parent: use fontsize at the right child
+
+# #14.5 Create Account part One (10:44)
+
+## TouchableOpacity is kinda View: move it from Component to Styled
+
+```js
+// screens/CreateAccount.js
+const CreateAccount = styled.TouchableOpacity``
+<CreateAccount onPress={goToCreateAccount}>
+  <CreateAccountText>Create Account</CreateAccountText>
+</CreateAccount>
+```
+
+## Options
+
+```ts
+// LoggedOutNav.tsx
+<Stack.Navigator screenOptions={{ headerBackTitleVisible: false }}> // remove title of headerBack
+options={{
+          headerTitle: "", // ts recommand "", not false
+          headerTransparent: true,
+          headerTintColor: "white",
+        }}
+```
+
+## disabled opacity
+
+```js
+  opacity: ${(props) => (props.disabled ? "0.5" : "1")};
+```
+
+# #14.6 Create Account part Two (13:39)
+
+## duplicated logo => AuthLayout
+
+```ts
+mkdir -p components/auth
+touch /components/auth/AuthLayout.tsx
+
+```
+
+## shared button => Authbutton
+
+```ts
+touch components/auth/AuthButton.tsx
+```
+
+## onPress type
+
+```js
+onPress: (event: GestureResponderEvent) => void;
+```
+
+## children type
+
+```js
+chilren: React.ReactNode;
+```
+
+## UX is the most important on RN
+
+```js
+// screens/CreateAccount.tsx
+returnKeyType = "next";
+returnKeyType = "next";
+returnKeyType = "next";
+returnKeyType = "done";
+```
