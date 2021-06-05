@@ -389,3 +389,19 @@ const dismissKeyboard = () => {
 ```
 
 - Android: "height: "100%". instead of "flex"
+
+# #14.9 Login Screen (10:44)
+
+## KeyboardAvoidingView from `CreateAccount` to `AuthLayout`
+
+## Share styles from `CreateAccount` to TextInput at `AuthShared.ts`
+
+```
+// touch components/auth/AuthShared.ts
+```
+
+## Share options from screen to `navigator`.`screenOptions` at `LoggedOutNav.tsx`
+
+## Add `lastOne={true}` at last input (`CreateAccount.tsx`)
+
+## `AuthLayout, Username, Password` to Login.tsx
