@@ -405,3 +405,33 @@ const dismissKeyboard = () => {
 ## Add `lastOne={true}` at last input (`CreateAccount.tsx`)
 
 ## `AuthLayout, Username, Password` to Login.tsx
+
+# #14.10 React Hooks Forms on Native (14:33)
+
+## disable TouchableWithoutFeedback at "web"
+
+## add onNext and useRef at `Login.tsx`
+
+# install react-hook-form
+
+```js
+npm i react-hook-form
+```
+
+## What is different with web?
+
+1. Register manually
+2. No onChange at RN => use `onChangeText`
+3. No form at RN => handleSubmit at `onPress` of button
+
+```js
+// Login.tsx
+useEffect(() => {
+  register("username");
+  register("password");
+}, [register]);
+...
+  onChangeText={text => setValue("username", text)}
+...
+<AuthButton text="Log In" disabled={false} onPress={handleSubmit(onValid)} />
+```

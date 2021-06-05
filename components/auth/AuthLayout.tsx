@@ -19,6 +19,7 @@ const Logo = styled.Image`
   max-width: 50%;
   width: 100%;
   height: 100px;
+  margin: 0 auto;
   margin-bottom: 20px;
 `;
 
@@ -32,8 +33,9 @@ export default function AuthLayout({
   };
   return (
     <TouchableWithoutFeedback
-      style={Platform.OS === "ios" ? { flex: 1 } : { height: "100%" }}
+      style={Platform.OS === "android" ? { height: "100%" } : { flex: 1 }}
       onPress={dismissKeyboard}
+      disabled={Platform.OS === "web"}
     >
       <Container>
         <KeyboardAvoidingView
