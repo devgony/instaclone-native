@@ -357,3 +357,35 @@ const onNext = (nextOne: React.RefObject<any>) => {
   nextOne?.current?.focus();
 };
 ```
+
+# #14.8 Natural Forms part Two (09:29)
+
+## KeyboardAvoidingView: moves virtual keyboard out of view
+
+```ts
+// CreateAcount.tsx
+<AuthLayout>
+      <KeyboardAvoidingView
+        style={{ width: "100%" }}
+        behavior="padding"
+        keyboardVerticalOffset={Platform.OS === "ios" ? 30 : 0}
+```
+
+- position: move the position of children only
+- padding: pad the bottom to avoid above all
+
+## KeyboardAvoidingView
+
+```js
+// AuthLayout.tsx
+import { Keyboard, TouchableWithoutFeedback } from "react-native";
+...
+const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
+...
+<TouchableWithoutFeedback style={{ flex: 1 }} onPress={dismissKeyboard}>
+      <Container>
+```
+
+- Android: "height: "100%". instead of "flex"
