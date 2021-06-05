@@ -340,3 +340,20 @@ returnKeyType = "next";
 returnKeyType = "next";
 returnKeyType = "done";
 ```
+
+# #14.7 Natural Forms part One (08:22)
+
+- autofocus: show keyboard right after load
+- useRef()
+- onSubmitEditing
+- onNext () => {nextRef.current?.focus()};
+- onDone
+
+## RN useRef types
+
+```ts
+const passwordRef = useRef<TextInput>(null);
+const onNext = (nextOne: React.RefObject<any>) => {
+  nextOne?.current?.focus();
+};
+```
