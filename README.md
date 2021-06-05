@@ -435,3 +435,45 @@ useEffect(() => {
 ...
 <AuthButton text="Log In" disabled={false} onPress={handleSubmit(onValid)} />
 ```
+
+# #14.11 Apollo Client (12:04)
+
+## ActivityIndicator: shows loading
+
+## testing phone: share url with,
+
+1. ngrox,
+
+- download ngrox
+
+```
+unzip /path/to/ngrok.zip
+./ngrok authtoken <your_auth_token>
+./ngrok help
+./ngrok http 4000
+```
+
+2. localtunnel
+
+```js
+npx localtunnel --port 4001 --subdomain ninstaclone
+=> https://ninstaclone.loca.lt
+
+// package.json
+    "loca": "npx localtunnel --port 4001 --subdomain ninstaclone",
+```
+
+## Install apollo
+
+```js
+npm i @apollo/client graphql
+// touch apollo.ts
+const client = new ApolloClient({
+  uri: "https://ninstaclone.loca.lt/graphql",
+  cache: new InMemoryCache(),
+});
+
+// cover with ApolloProvider at App.tsx
+return (
+    <ApolloProvider client={client}>
+```

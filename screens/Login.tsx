@@ -49,7 +49,7 @@ export default function LogIn({ navigation }: Props) {
       />
       <AuthButton
         text="Log In"
-        disabled={false}
+        loading={true}
         onPress={handleSubmit(onValid)}
       />
     </AuthLayout>

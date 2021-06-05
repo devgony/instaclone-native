@@ -1,5 +1,5 @@
 import React from "react";
-import { GestureResponderEvent } from "react-native";
+import { ActivityIndicator, GestureResponderEvent } from "react-native";
 import styled from "styled-components/native";
 import { colors } from "../../color";
 
@@ -19,14 +19,24 @@ const ButtonText = styled.Text`
 
 type Props = {
   onPress: (event: GestureResponderEvent) => void;
-  disabled: boolean;
+  disabled?: boolean;
   text: string;
+  loading: boolean;
 };
 
-export default function AuthButton({ onPress, disabled, text }: Props) {
+export default function AuthButton({
+  onPress,
+  disabled,
+  text,
+  loading,
+}: Props) {
   return (
     <Button disabled={disabled} onPress={onPress}>
-      <ButtonText>{text}</ButtonText>
+      {loading ? (
+        <ActivityIndicator color="white" />
+      ) : (
+        <ButtonText>{text}</ButtonText>
+      )}
     </Button>
   );
 }

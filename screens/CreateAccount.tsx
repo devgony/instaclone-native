@@ -81,7 +81,7 @@ export default function CreateAccount() {
       />
       <AuthButton
         text="Create Account"
-        disabled={false}
+        loading={true}
         onPress={handleSubmit(onValid)}
       />
     </AuthLayout>
