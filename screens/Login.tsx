@@ -5,27 +5,57 @@ import { TextInput } from "../components/auth/AuthShared";
 import { RootStackParamList } from "../navigators/LoggedOutNav";
 import { SubmitHandler, useForm } from "react-hook-form";
 import AuthButton from "../components/auth/AuthButton";
+import gql from "graphql-tag";
+import { useMutation } from "@apollo/client";
+import { login, loginVariables } from "../__generated__/login";
+import { isLoggedInVar } from "../apollo";
+
+const LOGIN_MUTATION = gql`
+  mutation login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      ok
+      token
+      error
+    }
+  }
+`;
 
 type Props = {
   navigation: StackNavigationProp<RootStackParamList, "Welcome">;
 };
 
-interface IForm {
-  data: { username: string; password: string };
-}
-
 export default function LogIn({ navigation }: Props) {
-  const { register, handleSubmit, setValue } = useForm();
+  const { register, handleSubmit, setValue, watch } = useForm();
   const passwordRef = useRef(null);
+  const onCompleted = (data: login) => {
+    const {
+      login: { ok, token, error },
+    } = data;
+    if (ok) {
+      isLoggedInVar(true);
+      console.log(token);
+    }
+    console.log(error);
+  };
+  const [logInMutation, { loading }] = useMutation<login, loginVariables>(
+    LOGIN_MUTATION,
+    {
+      onCompleted,
+    }
+  );
   const onNext = (nextOne: React.RefObject<any>) => {
     nextOne?.current?.focus();
   };
-  const onValid: SubmitHandler<IForm> = data => {
-    console.log(data);
+  const onValid: SubmitHandler<loginVariables> = data => {
+    if (!loading) {
+      logInMutation({
+        variables: { ...data },
+      });
+    }
   };
   useEffect(() => {
-    register("username");
-    register("password");
+    register("username", { required: true });
+    register("password", { required: true });
   }, [register]);
   return (
     <AuthLayout>
@@ -49,7 +79,8 @@ export default function LogIn({ navigation }: Props) {
       />
       <AuthButton
         text="Log In"
-        loading={true}
+        loading={loading}
+        disabled={!watch("username") || !watch("password")}
         onPress={handleSubmit(onValid)}
       />
     </AuthLayout>

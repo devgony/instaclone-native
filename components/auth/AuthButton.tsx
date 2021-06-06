@@ -21,7 +21,7 @@ type Props = {
   onPress: (event: GestureResponderEvent) => void;
   disabled?: boolean;
   text: string;
-  loading: boolean;
+  loading?: boolean;
 };
 
 export default function AuthButton({

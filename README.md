@@ -458,9 +458,6 @@ unzip /path/to/ngrok.zip
 ```js
 npx localtunnel --port 4001 --subdomain ninstaclone
 => https://ninstaclone.loca.lt
-
-// package.json
-    "loca": "npx localtunnel --port 4001 --subdomain ninstaclone",
 ```
 
 ## Install apollo
@@ -476,4 +473,56 @@ const client = new ApolloClient({
 // cover with ApolloProvider at App.tsx
 return (
     <ApolloProvider client={client}>
+```
+
+# #14.12 Log In Mutation (13:52)
+
+## Tabnavigator
+
+```js
+npm install @react-navigation/bottom-tabs
+// touch navigators/LoggedInNav.tsx
+const Tabs = createBottomTabNavigator();
+
+touch screens/Feed.tsx
+```
+
+## Reactive variable
+
+```js
+// apollo.ts
+export const isLoggedInVar = makeVar(false);
+
+// App.tsx
+const isLoggedIn = useReactiveVar(isLoggedInVar);
+isLoggedIn ? <LoggedInNav /> : <LoggedOutNav />;
+```
+
+## First mutation: LOGIN
+
+```js
+npm i rimraf
+// package.json
+"apollo:codegen": "rimraf src/__generated__ && apollo client:codegen src/__generated__ --target=typescript --outputFlat --globalTypesFile false"
+
+// touch apollo.config.js
+module.exports = {
+  client: {
+    includes: ["./src/**/*.{tsx,ts}"],
+    tagName: "gql",
+    service: {
+      name: "instaclone-backend",
+      url: "https://ninstaclone.loca.lt/graphql",
+    },
+  },
+};
+```
+
+## watch instead of formState
+
+- formState doesn't work on RN
+
+```js
+// Login.tsx
+        disabled={!watch("username") || !watch("password")}
 ```

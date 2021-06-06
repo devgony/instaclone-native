@@ -11,6 +11,7 @@ const LoginLink = styled.Text`
   color: ${colors.blue};
   font-weight: 600;
   margin-top: 20px;
+  text-align: center;
 `;
 
 type Props = {
@@ -23,7 +24,7 @@ export default function Welcome({ navigation }: Props) {
   return (
     <AuthLayout>
       <AuthButton
-        text="Crate New Account"
+        text="Create New Account"
         disabled={false}
         onPress={goToCreateAccount}
       />
