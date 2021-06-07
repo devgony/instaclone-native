@@ -1,8 +1,31 @@
+import { useMutation } from "@apollo/client";
+import gql from "graphql-tag";
 import React, { useEffect, useRef } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import AuthButton from "../components/auth/AuthButton";
 import AuthLayout from "../components/auth/AuthLayout";
 import { TextInput } from "../components/auth/AuthShared";
+
+const CREATE_ACCOUNT_MUTATION = gql`
+  mutation createAccount(
+    $firstName: String!
+    $lastName: String
+    $username: String!
+    $email: String!
+    $password: String!
+  ) {
+    createAccount(
+      firstName: $firstName
+      lastName: $lastName
+      username: $username
+      email: $email
+      password: $password
+    ) {
+      ok
+      error
+    }
+  }
+`;
 
 interface IForm {
   data: {
@@ -15,6 +38,13 @@ interface IForm {
 }
 
 export default function CreateAccount() {
+  const onCompleted = () => {};
+  const [createAccountMutation, { loading }] = useMutation(
+    CREATE_ACCOUNT_MUTATION,
+    {
+      onCompleted,
+    }
+  );
   const { register, handleSubmit, setValue } = useForm();
   const lastNameRef = useRef(null);
   const usernameRef = useRef(null);
@@ -25,7 +55,7 @@ export default function CreateAccount() {
     nextOne?.current?.focus();
   };
   const onValid: SubmitHandler<IForm> = data => {
-    console.log(data);
+    createAccountMutation({ variables: { ...data } });
   };
   useEffect(() => {
     register("firstName", { required: true });

@@ -455,9 +455,20 @@ unzip /path/to/ngrok.zip
 
 2. localtunnel
 
+# 1. npx way
+
 ```js
-npx localtunnel --port 4001 --subdomain ninstaclone
-=> https://ninstaclone.loca.lt
+npx localtunnel --port 4001 --subdomain <NAME>
+=> https://<NAME>.loca.lt
+```
+
+# 2. API at backend way => backend repo
+
+```js
+npm i babel-plugin-inline-dotenv
+
+// touch .env
+URI_GQL=<uriOfGql>
 ```
 
 ## Install apollo
@@ -466,7 +477,7 @@ npx localtunnel --port 4001 --subdomain ninstaclone
 npm i @apollo/client graphql
 // touch apollo.ts
 const client = new ApolloClient({
-  uri: "https://ninstaclone.loca.lt/graphql",
+  uri: process.env.URI_GQL,
   cache: new InMemoryCache(),
 });
 
@@ -506,13 +517,14 @@ npm i rimraf
 "apollo:codegen": "rimraf src/__generated__ && apollo client:codegen src/__generated__ --target=typescript --outputFlat --globalTypesFile false"
 
 // touch apollo.config.js
+require("dotenv").config();
 module.exports = {
   client: {
     includes: ["./src/**/*.{tsx,ts}"],
     tagName: "gql",
     service: {
       name: "instaclone-backend",
-      url: "https://ninstaclone.loca.lt/graphql",
+      url: process.env.URI_GQL,
     },
   },
 };
@@ -526,3 +538,5 @@ module.exports = {
 // Login.tsx
         disabled={!watch("username") || !watch("password")}
 ```
+
+# #14.13 Create Account Mutation (10:19)

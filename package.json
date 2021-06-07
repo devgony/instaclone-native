@@ -6,7 +6,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "apollo:codegen": "rimraf __generated__ && apollo client:codegen __generated__ --target=typescript --outputFlat --globalTypesFile false"
+    "ac": "rimraf __generated__ && apollo client:codegen __generated__ --target=typescript --outputFlat --globalTypesFile false"
   },
   "dependencies": {
     "@apollo/client": "^3.3.19",
@@ -39,6 +39,7 @@
     "@types/react-native": "~0.63.2",
     "@types/styled-components": "^5.1.9",
     "@types/styled-components-react-native": "^5.1.1",
+    "babel-plugin-inline-dotenv": "^1.6.0",
     "typescript": "~4.0.0"
   },
   "private": true
