@@ -4,7 +4,7 @@ module.exports = {
     tagName: "gql",
     service: {
       name: "instaclone-backend",
-      url: process.env.URI_GQL,
+      url: "https://ninstaclone.loca.lt/graphql",
     },
   },
 };
