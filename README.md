@@ -540,3 +540,251 @@ module.exports = {
 ```
 
 # #14.13 Create Account Mutation (10:19)
+
+## Shared type at `types.d.ts`
+
+```ts
+import { RouteProp } from "@react-navigation/core";
+import { StackNavigationProp } from "@react-navigation/stack";
+
+export type RootStackParamList = {
+  Welcome: undefined;
+  LogIn: { username: string; password: string } | undefined;
+  CreateAccount: undefined;
+};
+
+export type Props<RouteName extends keyof RootStackParamList> = {
+  navigation: StackNavigationProp<RootStackParamList, RouteName>;
+  route: RouteProp<RootStackParamList, RouteName>;
+};
+```
+
+## To Prefil form right after creeatAccount...
+
+## Send and get paramter to other screen
+
+```js
+// CreateAccount.tsx
+navigation.navigate("LogIn", { username, password });
+
+// Login.tsx
+defaultValues: {
+      username: params?.username,
+      password: params?.password,
+    },
+```
+
+## defaultValue does not work at RN => manually show with `value=watch()`
+
+```js
+// Login.tsx
+<AuthLayout>
+      <TextInput
+        value={watch("username")}
+```
+
+# #14.14 AsyncStorage part One (07:00)
+
+# Check RN library compatibility at `https://reactnative.directory/`
+
+# `AsyncStorage` instead of local storage
+
+- same with localStorage except fot needing await
+
+```ts
+expo install @react-native-async-storage/async-storage
+
+// apollo.ts
+export const logUserIn = async (token: login_login["token"]) => {
+  await AsyncStorage.multiSet([
+    ["token", JSON.stringify(token)],
+    ["loggedIn", JSON.stringify("yes")],
+  ]);
+  isLoggedInVar(true);
+};
+```
+
+# #14.14 AsyncStorage part One (07:00)
+
+## web: token at http header whenever send gql => RN: keep token at reactive variable
+
+```js
+// apollo.ts
+export const tokenVar = makeVar("");
+...
+token && tokenVar(token);
+...
+```
+
+## getItem => App preloading at `App.tsx`
+
+```js
+const preload = async () => {
+  const token = await AsyncStorage.getItem("token");
+  if (token) {
+    isLoggedInVar(true);
+    tokenVar(token);
+  }
+  return preloadAssets();
+};
+```
+
+## Homework: Logout button and multi remove
+
+## Lookup type
+
+```ts
+// apoll.ts (modified)
+export const logUserIn = async (token: login_login["token"]) => {
+```
+
+# #14.16 Recap (05:04)
+
+# #15.0 Tab Navigator (12:58)
+
+## `Feed.tsx` + Create 3 more Tabs
+
+```
+touch screens/Notifications.tsx
+touch screens/Profile.tsx
+touch screens/Search.tsx
+```
+
+## Bottom Tab style options
+
+- showLabel: false
+- Ionicons with focused
+
+```js
+<Tabs.Navigator
+      tabBarOptions={{
+        activeTintColor: "white",
+        showLabel: false,
+        style: {
+          borderTopColor: "rgba(255, 255, 255, 0.3)",
+          backgroundColor: "black",
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="Feed"
+        component={Feed}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name="home" color={color} size={focused ? 24 : 20} />
+          ),
+        }}
+      />
+...
+```
+
+# #15.1 Tab Navigator part Two (06:55)
+
+## Use Empty view for camera pop-up
+
+```js
+import { View } from "react-native";
+<Tabs.Screen
+  name="Camera"
+  component={View}
+  options={{
+    tabBarIcon: ({ focused, color, size }) => (
+      <TabIcon iconName={"camera"} color={color} focused={focused} />
+    ),
+  }}
+/>;
+```
+
+## Use outline for icons and create My ICons
+
+```js
+// types.d.ts
+export type ICons =
+  | "link"
+  | "search"
+...
+```
+
+## Ioncions to shared component
+
+```ts
+mkdir components/nav/
+// touch components/nav/TabIcon.tsx
+interface ITabIcon {
+  iconName: ICons;
+  color: string;
+  focused: boolean;
+}
+
+export default function TabIcon({ iconName, color, focused }: ITabIcon) {
+  return (
+    <Ionicons
+      name={focused ? iconName : (`${iconName}-outline` as ICons)}
+      color={color}
+      size={22}
+    />
+  );
+}
+```
+
+## Explicit type assertion
+
+```js
+type GlyphNames = ComponentProps<typeof FontAwesome>["name"];
+type typeList = "이것만" | "된다" | "된다-suffix";
+const correct = "된다";
+const ok: typeList = correct;
+const error: typeList = `${correct}-suffix`;
+
+<Ionicons
+name={focused ? iconName : (`${iconName}-outline` as ICons)}
+// without as ICons: Type 'string' is not assignable to type 'typeList'.ts(2322)
+```
+
+# #15.2 Stack and Tabs (14:04)
+
+## Stack navigator inside of each Tab navigator
+
+- first page of stack is different
+- rest are shared (Profile, Photo)
+
+```js
+touch screens/Me.tsx
+touch screens/Photo.tsx
+touch components/nav/StackNavFactory.tsx
+```
+
+## New way to render with `()=>{}`
+
+- should choose one component? or children?
+- only 1 comp: component
+- if want to send props, children is better
+
+```js
+<Tabs.Screen
+  name="Feed"
+  options={{
+    tabBarIcon: ({ focused, color, size }) => (
+      <TabIcon iconName={"home"} color={color} focused={focused} />
+    ),
+  }}
+>
+  {() => <StackNavFactory screenName="Feed" />}
+</Tabs.Screen>
+```
+
+## With navigation, navigate through stacks
+
+## Set screenName with `keyof RootStackParamList`
+
+```js
+interface IStackNavFactory {
+  screenName: keyof RootStackParamList;
+}
+
+export default function StackNavFactory({ screenName }: IStackNavFactory) {
+```
+
+# #15.3 Stack and Tabs part Two (07:04)
+
+- recap

@@ -2,7 +2,7 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Props } from "../types";
 
-export default function Feed({ navigation }: Props<"Feed">) {
+export default function Search({ navigation }: Props<"Search">) {
   return (
     <View
       style={{

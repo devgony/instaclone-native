@@ -2,7 +2,7 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Props } from "../types";
 
-export default function Feed({ navigation }: Props<"Feed">) {
+export default function Photo({ navigation }: Props<"Me">) {
   return (
     <View
       style={{
@@ -12,8 +12,8 @@ export default function Feed({ navigation }: Props<"Feed">) {
         justifyContent: "center",
       }}
     >
-      <TouchableOpacity onPress={() => navigation.navigate("Photo")}>
-        <Text style={{ color: "white" }}>Photo</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+        <Text style={{ color: "white" }}>Profile</Text>
       </TouchableOpacity>
     </View>
   );

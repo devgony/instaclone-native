@@ -5,6 +5,11 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import AuthButton from "../components/auth/AuthButton";
 import AuthLayout from "../components/auth/AuthLayout";
 import { TextInput } from "../components/auth/AuthShared";
+import { Props } from "../types";
+import {
+  createAccount,
+  createAccountVariables,
+} from "../__generated__/createAccount";
 
 const CREATE_ACCOUNT_MUTATION = gql`
   mutation createAccount(
@@ -27,25 +32,24 @@ const CREATE_ACCOUNT_MUTATION = gql`
   }
 `;
 
-interface IForm {
-  data: {
-    firstName: string;
-    lastName: string;
-    username: string;
-    email: string;
-    password: string;
-  };
-}
-
-export default function CreateAccount() {
-  const onCompleted = () => {};
-  const [createAccountMutation, { loading }] = useMutation(
-    CREATE_ACCOUNT_MUTATION,
-    {
-      onCompleted,
+export default function CreateAccount({ navigation }: Props<"CreateAccount">) {
+  const { register, handleSubmit, setValue, getValues } = useForm();
+  const onCompleted = (data: createAccount) => {
+    const {
+      createAccount: { ok, error },
+    } = data;
+    const { username, password } = getValues();
+    if (ok) {
+      navigation.navigate("LogIn", { username, password });
     }
-  );
-  const { register, handleSubmit, setValue } = useForm();
+    if (error) console.log(error);
+  };
+  const [createAccountMutation, { loading }] = useMutation<
+    createAccount,
+    createAccountVariables
+  >(CREATE_ACCOUNT_MUTATION, {
+    onCompleted,
+  });
   const lastNameRef = useRef(null);
   const usernameRef = useRef(null);
   const emailRef = useRef(null);
@@ -54,7 +58,7 @@ export default function CreateAccount() {
   const onNext = (nextOne: React.RefObject<any>) => {
     nextOne?.current?.focus();
   };
-  const onValid: SubmitHandler<IForm> = data => {
+  const onValid: SubmitHandler<createAccountVariables> = data => {
     createAccountMutation({ variables: { ...data } });
   };
   useEffect(() => {
@@ -111,7 +115,7 @@ export default function CreateAccount() {
       />
       <AuthButton
         text="Create Account"
-        loading={true}
+        loading={loading}
         onPress={handleSubmit(onValid)}
       />
     </AuthLayout>

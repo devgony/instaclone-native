@@ -3,12 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import CreateAccount from "../screens/CreateAccount";
 import LogIn from "../screens/Login";
 import Welcome from "../screens/Welcome";
-
-export type RootStackParamList = {
-  Welcome: undefined;
-  LogIn: undefined;
-  CreateAccount: undefined;
-};
+import { RootStackParamList } from "../types";
 
 const Stack = createStackNavigator<RootStackParamList>();
 

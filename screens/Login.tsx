@@ -1,14 +1,13 @@
 import React, { useEffect, useRef } from "react";
-import { StackNavigationProp } from "@react-navigation/stack";
 import AuthLayout from "../components/auth/AuthLayout";
 import { TextInput } from "../components/auth/AuthShared";
-import { RootStackParamList } from "../navigators/LoggedOutNav";
 import { SubmitHandler, useForm } from "react-hook-form";
 import AuthButton from "../components/auth/AuthButton";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import { login, loginVariables } from "../__generated__/login";
-import { isLoggedInVar } from "../apollo";
+import { isLoggedInVar, logUserIn } from "../apollo";
+import { Props } from "../types";
 
 const LOGIN_MUTATION = gql`
   mutation login($username: String!, $password: String!) {
@@ -20,22 +19,22 @@ const LOGIN_MUTATION = gql`
   }
 `;
 
-type Props = {
-  navigation: StackNavigationProp<RootStackParamList, "Welcome">;
-};
-
-export default function LogIn({ navigation }: Props) {
-  const { register, handleSubmit, setValue, watch } = useForm();
+export default function LogIn({ route: { params } }: Props<"LogIn">) {
+  const { register, handleSubmit, setValue, watch } = useForm({
+    defaultValues: {
+      username: params?.username,
+      password: params?.password,
+    },
+  });
   const passwordRef = useRef(null);
-  const onCompleted = (data: login) => {
+  const onCompleted = async (data: login) => {
     const {
       login: { ok, token, error },
     } = data;
-    if (ok) {
-      isLoggedInVar(true);
-      console.log(token);
+    if (ok && token) {
+      await logUserIn(token);
     }
-    console.log(error);
+    if (error) console.log(error);
   };
   const [logInMutation, { loading }] = useMutation<login, loginVariables>(
     LOGIN_MUTATION,
@@ -60,6 +59,7 @@ export default function LogIn({ navigation }: Props) {
   return (
     <AuthLayout>
       <TextInput
+        value={watch("username")}
         placeholder="Username"
         returnKeyType="next"
         autoCapitalize="none"
@@ -68,6 +68,7 @@ export default function LogIn({ navigation }: Props) {
         onChangeText={text => setValue("username", text)}
       />
       <TextInput
+        value={watch("password")}
         ref={passwordRef}
         placeholder="Password"
         secureTextEntry
