@@ -7,6 +7,7 @@ import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from "../fragments";
 import { Props } from "../types";
 import { seeFeed, seeFeed_seeFeed } from "../__generated__/seeFeed";
 import ScreenLayout from "../components/ScreenLayout";
+import Photo from "../components/Photo";
 
 const SEE_FEED = gql`
   query seeFeed {
@@ -31,15 +32,13 @@ const SEE_FEED = gql`
 export default function Feed({ navigation }: Props<"Feed">) {
   const { data, loading } = useQuery<seeFeed>(SEE_FEED);
   const renderPhoto = ({ item: photo }: { item: seeFeed_seeFeed }) => {
-    return (
-      <View style={{ flex: 1 }}>
-        <Text style={{ color: "white" }}>{photo.caption}</Text>
-      </View>
-    );
+    return <Photo {...photo} />;
   };
   return (
     <ScreenLayout loading={loading}>
       <FlatList
+        style={{ width: "100%" }}
+        showsVerticalScrollIndicator={false}
         data={data?.seeFeed}
         keyExtractor={photo => "" + photo.id}
         renderItem={renderPhoto}

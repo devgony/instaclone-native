@@ -852,6 +852,89 @@ return (
 
 # #15.6 Photo part One (12:48)
 
+## 3 Steps to development
+
+1. Architect skeleton first
+2. Fill data
+3. Draw styled
+
 ```js
-touch components/Photo.tsx
+// touch components/Photo.tsx
+<Container>
+  <Header>
+    <UserAvatar />
+    <Username></Username>
+  </Header>
+  <File />
+  <Actions>
+    <Action />
+    <Action />
+  </Actions>
+  <Likes></Likes>
+  <Caption>
+    <Username>}</Username>
+    <CaptionText></CaptionText>
+  </Caption>
+</Container>
+```
+
+## FlatList width + removeScroll
+
+```js
+// Feed.tsx
+      <FlatList
+        style={{ width: "100%" }}
+        showsVerticalScrollIndicator={false}
+```
+
+## Get window size + Handling file of RN: style={width & height} is mendatory
+
+```js
+// components/Photo.tsx
+const { width, height } = useWindowDimensions();
+...
+<File
+  style={{
+    width,
+    height: height - 500,
+  }}
+  source={{ uri: file }}
+/>
+      ...
+```
+
+# #15.7 Photo part Two (11:50)
+
+## How to get navigation?
+
+1. props down
+2. useNavigation
+
+## Keep real size => getSize()
+
+- default size = window.height - 450
+- if success to getSize, setImageHeight to height / 3
+
+```js
+// components/Photo.tsx
+const navigation = useNavigation();
+const { width, height } = useWindowDimensions();
+const [imageHeight, setImageHeight] = useState(height - 450);
+useEffect(() => {
+  Image.getSize(file, (width, height) => {
+    // (file, if success cb)
+    setImageHeight(height / 3);
+  });
+}, [file]);
+```
+
+## resizeMode
+
+- contain: fill margin at bottom
+- cover: real size
+
+```js
+// components/Photo.tsx
+<File
+        resizeMode="cover"
 ```
