@@ -788,3 +788,70 @@ export default function StackNavFactory({ screenName }: IStackNavFactory) {
 # #15.3 Stack and Tabs part Two (07:04)
 
 - recap
+
+# #15.4 Apollo Auth (10:17)
+
+- logo
+
+```js
+// navigators/SharedStackNav.tsx
+options={{
+            headerTitle: () => (
+              <Image
+                style={{
+                  width: 120,
+                  height: 40,
+                }}
+                resizeMode="contain"
+                source={require("../assets/logo.png")}
+              />
+            ),
+```
+
+- token at `apollo`
+- SEE_FEED at `Fees.tsx`
+- fragment at `fragments.ts`
+
+```
+touch fragments.ts
+mv components/nav/StackNavFactory.tsx navigators/SharedStackNav.tsx
+```
+
+# #15.5 FlatList (13:24)
+
+## ScreenLayout.tsx : loading handler
+
+```js
+// touch components/ScreenLayout.tsx
+{
+  loading ? <ActivityIndicator color="white" /> : children;
+}
+```
+
+## Web load at once like `ScrolView`, Mobile shouldn't => `FlatList`
+
+```js
+// Feed.tsx
+const renderPhoto = ({ item: photo }: { item: seeFeed_seeFeed }) => {
+  return (
+    <View style={{ flex: 1 }}>
+      <Text style={{ color: "white" }}>{photo.caption}</Text>
+    </View>
+  );
+};
+return (
+  <ScreenLayout loading={loading}>
+    <FlatList
+      data={data?.seeFeed}
+      keyExtractor={photo => "" + photo.id}
+      renderItem={renderPhoto}
+    />
+  </ScreenLayout>
+);
+```
+
+# #15.6 Photo part One (12:48)
+
+```js
+touch components/Photo.tsx
+```
