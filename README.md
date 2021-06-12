@@ -938,3 +938,111 @@ useEffect(() => {
 <File
         resizeMode="cover"
 ```
+
+# #15.8 Photo part Three (09:26)
+
+- caption, action: likes, comment
+
+- Add Likes,Comments to shared stack nav
+
+```js
+touch screens/Likes.tsx
+touch screens/Comments.tsx
+
+// SharedStackNav.tsx
+<Stack.Screen name="Likes" component={Likes} />
+<Stack.Screen name="Comments" component={Comments} />
+
+// types.d.ts
+export type RootStackParamList = {
+...
+  Likes;
+  Comments;
+};
+```
+
+# #15.9 Pull to Refresh (07:01)
+
+## if new data => apollo load again..?
+
+- how could it recognize new data?
+
+```js
+const refresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
+  return (
+    <ScreenLayout loading={loading}>
+      <FlatList
+        // refreshing={refreshing}
+        // onRefresh={refetch}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refresh}
+            tintColor="red" // ios
+            colors={["red"]} // android
+          />
+        }
+```
+
+- Why refreshing, onRefresh doesn't work?
+- IOS: tintColor, Android: colors
+
+# #15.10 Infinite Scrolling part One (08:52)
+
+## BACKEND: offset at `seeFeed.resolvers.ts`
+
+- onEndReached
+- onEndReachThreshold: load at the middle
+  - 0: no threshold
+  - 1: middle
+
+## offset state + setOffset => rerender sucks => use `fetchMore`
+
+```js
+// Feed.tsx
+const { data, loading, refetch, fetchMore } = useQuery<seeFeed>(SEE_FEED, {
+    variables: {
+      offset: 0,
+    },
+...
+<FlatList
+        onEndReachedThreshold={0}
+        onEndReached={() =>
+          fetchMore({
+            variables: {
+              offset: data?.seeFeed?.length,
+            },
+          })
+        }
+```
+
+# #15.11 Infinite Scrolling part Two (09:37)
+
+## apoll consider offset 1 and 2 is different gql => typePolicies => merge!
+
+- Compoenet is not changed at all => no new rendering
+
+```js
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          seeFeed: offsetLimitPagination(), // 1. by package
+          // seeFeed: { // 2. vanilla way
+          //   keyArgs: false,
+          //   merge(exisintg = [], incoming = []) {
+          //     return [...exisintg, ...incoming];
+          //   },
+          // },
+        },
+      },
+    },
+  }),
+});
+```

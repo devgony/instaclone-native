@@ -11,6 +11,8 @@ export type RootStackParamList = {
   Search;
   Feed: undefined;
   Notifications;
+  Likes;
+  Comments;
 };
 
 export type Props<RouteName extends keyof RootStackParamList> = {
