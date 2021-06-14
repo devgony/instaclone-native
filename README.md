@@ -1022,7 +1022,7 @@ const { data, loading, refetch, fetchMore } = useQuery<seeFeed>(SEE_FEED, {
 
 # #15.11 Infinite Scrolling part Two (09:37)
 
-## apoll consider offset 1 and 2 is different gql => typePolicies => merge!
+## Apollo consider offset 1 and 2 is different gql => typePolicies => merge!
 
 - Compoenet is not changed at all => no new rendering
 
@@ -1046,3 +1046,5 @@ const client = new ApolloClient({
   }),
 });
 ```
+
+# #15.12 Cache Persist (11:34)
