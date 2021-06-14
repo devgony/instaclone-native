@@ -5,6 +5,17 @@ import { seeFeed_seeFeed } from "../__generated__/seeFeed";
 import { useNavigation } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
+import { gql, MutationUpdaterFn, useMutation } from "@apollo/client";
+import { toggleLike, toggleLikeVariables } from "../__generated__/toggleLike";
+
+const TOGGLE_LIKE_MUTATION = gql`
+  mutation toggleLike($id: Int!) {
+    toggleLike(id: $id) {
+      ok
+      error
+    }
+  }
+`;
 
 const Container = styled.View``;
 const Header = styled.TouchableOpacity`
@@ -63,6 +74,34 @@ export default function Photo({
       // setImageHeight(height / 3);
     });
   }, [file]);
+  const updateToggleLike: MutationUpdaterFn<toggleLike> = (cache, result) => {
+    if (result.data?.toggleLike.ok) {
+      const photoId = `Photo:${id}`;
+      cache.modify({
+        id: photoId,
+        fields: {
+          isLiked(prev) {
+            return !prev;
+          },
+          likes(prev) {
+            if (isLiked) {
+              return prev - 1;
+            }
+            return prev + 1;
+          },
+        },
+      });
+    }
+  };
+  const [toggleLikeMutation] = useMutation<toggleLike, toggleLikeVariables>(
+    TOGGLE_LIKE_MUTATION,
+    {
+      variables: {
+        id,
+      },
+      update: updateToggleLike,
+    }
+  );
   return (
     <Container>
       <Header onPress={() => navigation.navigate("Profile")}>
@@ -81,7 +120,7 @@ export default function Photo({
       />
       <ExtraContainer>
         <Actions>
-          <Action>
+          <Action onPress={() => toggleLikeMutation()}>
             <Ionicons
               name={isLiked ? "heart" : "heart-outline"}
               color={isLiked ? "tomato" : "white"}

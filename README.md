@@ -1048,3 +1048,31 @@ const client = new ApolloClient({
 ```
 
 # #15.12 Cache Persist (11:34)
+
+## persistCache setting
+
+- keep data at cache even though backend is down.
+- but why doens't it keep my image?
+
+```js
+// apollo.ts
+export const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        seeFeed: offsetLimitPagination(),
+      },
+    },
+  },
+});
+
+// App.tsx
+...
+await persistCache({
+      cache,
+      storage: new AsyncStorageWrapper(AsyncStorage),
+    });
+...
+```
+
+## Mutation toggleLike at `Photo.tsx`
