@@ -1076,3 +1076,131 @@ await persistCache({
 ```
 
 ## Mutation toggleLike at `Photo.tsx`
+
+# 16.0 Likes part One
+
+## UserRow for likes list
+
+```
+touch components/UserRow.tsx
+```
+
+## useQuery with skip at `Likes.js`
+
+```js
+// screens/Likes.tsx
+const { data, loading, refetch, error } =
+  useQuery <
+  seePhotoLikes >
+  (LIKES_QUERY,
+  {
+    variables: {
+      id: route?.params?.photoId,
+    },
+    skip: !route?.params?.photoId,
+  });
+```
+
+## HOMEWORK: persistCache prohibits loading till refresh manually ?
+
+## HOMEWORK: image does not show?
+
+# #16.1 Likes part Two (11:40)
+
+## separator of flatlist => render bolder except top and bottom
+
+```js
+// screens/Likes.tsx
+<FlatList
+  ItemSeparatorComponent={() => (
+    <View
+      style={{
+        width: "100%",
+        height: 1,
+        backgroundColor: "rgba(255, 255, 255, 0.2)",
+      }}
+    ></View>
+  )}
+```
+
+## goToProfile at `components/Photo.tsx`, `components/UserRow.tsx`
+
+## `serialize: false` => when schema and cache are different, does not render
+
+- => but cache does not work at all?
+
+```js
+// App.tsx
+await persistCache({
+  cache,
+  storage: new AsyncStorageWrapper(AsyncStorage),
+  serialize: false,
+});
+```
+
+# #16.2 Header Domination (07:16)
+
+## 1. by route.params
+
+```js
+// screens/Profile.tsx
+if (route?.params?.username) {
+  useEffect(() => {
+    navigation.setOptions({
+      title: route?.params?.username,
+    });
+  });
+}
+```
+
+## 2. by useMe Query
+
+```js
+mkdir hooks
+// touch hooks/useMe.ts
+export default function useMe() {
+  const hasToken = useReactiveVar(isLoggedInVar);
+  const { data } = useQuery<me>(ME_QUERY, {
+    skip: !hasToken,
+  });
+  useEffect(() => {
+    if (data?.me === null) {
+      logUserOut();
+    }
+  }, [data]);
+  return { data };
+}
+
+// screens/Me.tsx
+const { data } = useMe();
+  useEffect(() => {
+    navigation.setOptions({
+      title: data?.me?.username,
+    });
+  }, []);
+```
+
+# #16.3 Search part One (10:21)
+
+## dismissing keyboard from AuthLayout => shared `DismissKeyboard.tsx`
+
+```js
+touch components/DismissKeyboard.tsx
+```
+
+## screens/Search.tsx
+
+- wecan return even react component to headerTitle
+
+```js
+useEffect(() => {
+  navigation.setOptions({
+    headerTitle: SearchBox,
+  });
+  register("keyword");
+}, []);
+```
+
+- RN register to searchbox
+- autoCapitalize, returnkeyType="search
+- autoCorrenct=false

@@ -17,6 +17,7 @@ const SEE_FEED = gql`
     seeFeed(offset: $offset) {
       ...PhotoFragment
       user {
+        id
         username
         avatar
       }
