@@ -1246,3 +1246,13 @@ const renderItem = ({ item: photo }: { item: seeFeed_seeFeed }) => (
   renderItem={renderItem}
 />
 ```
+
+# #16.7 Photo Screen (13:29)
+
+## change screen name from Photo => PhotoScreen
+
+## Search.tsx => onPress navigate to PhotoScreen with photoId
+
+## ScrollView at `screens/Photo.tsx`: not pagination of data but when we sure the page would be overflowed
+
+- style with: contentContainerStyle

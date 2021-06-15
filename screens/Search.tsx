@@ -84,7 +84,13 @@ export default function Search({ navigation }: Props<"Search">) {
     });
   }, []);
   const renderItem = ({ item: photo }: { item: seeFeed_seeFeed }) => (
-    <TouchableOpacity>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("PhotoScreen", {
+          photoId: photo.id,
+        })
+      }
+    >
       <Image
         source={{ uri: photo.file }}
         style={{ width: width / numColumns, height: 100 }} // calculate each width to stretch max

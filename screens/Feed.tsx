@@ -60,7 +60,7 @@ export default function Feed({ navigation }: Props<"Feed">) {
           })
         }
         // refreshing={refreshing}
-        // onRefresh={refetch}
+        onRefresh={refetch}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={refresh} />
         }
