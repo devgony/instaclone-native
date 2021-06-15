@@ -1204,3 +1204,45 @@ useEffect(() => {
 - RN register to searchbox
 - autoCapitalize, returnkeyType="search
 - autoCorrenct=false
+
+# #16.4 Search part Two (06:50)
+
+## avatar to me tabnav icon
+
+- useMe => ternary
+- remind that RN Image's width and height are mendatory if source is from remote
+
+## `useLazyQuery`: searchPhotos at `screens/Search.tsx` only when search
+
+# #16.5 Search part Three (12:25)
+
+- lazyQuery bug => sending watch has error => use onSubmitValid
+- onSubmitValid => fire lazyQuery
+- called: has been called or not to diffenciate init screen
+
+# #16.6 Search part Four (09:00)
+
+## styling: Search.tsx
+
+## width / numColumn => stretch max
+
+## numColumns: grid option of Flatlist
+
+```js
+// screens/Search.tsx
+const renderItem = ({ item: photo }: { item: seeFeed_seeFeed }) => (
+  <TouchableOpacity>
+    <Image
+      source={{ uri: photo.file }}
+      style={{ width: width / numColumns, height: 100 }} // calculate each width to stretch max
+    />
+  </TouchableOpacity>
+);
+...
+<FlatList
+  numColumns={numColumns}
+  data={data?.searchPhotos}
+  keyExtractor={photo => "" + photo.id}
+  renderItem={renderItem}
+/>
+```
