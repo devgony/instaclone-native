@@ -54,7 +54,7 @@ export default function PhotoScreen({ route }: Props<"PhotoScreen">) {
           justifyContent: "center",
         }}
       >
-        {data?.seePhoto?.caption && <Photo {...data.seePhoto} />}
+        {data?.seePhoto && <Photo {...data.seePhoto} />}
       </ScrollView>
     </ScreenLayout>
   );

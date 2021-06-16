@@ -64,7 +64,7 @@ export default function Photo({
   file,
   isLiked,
   likes,
-}: Omit<seeFeed_seeFeed, "__typename">) {
+}: seeFeed_seeFeed) {
   const navigation = useNavigation();
   const { width, height } = useWindowDimensions();
   const [imageHeight, setImageHeight] = useState(height - 400);
