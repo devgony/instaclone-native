@@ -480,6 +480,7 @@ const client = new ApolloClient({
   uri: process.env.URI_GQL,
   cache: new InMemoryCache(),
 });
+export default client;
 
 // cover with ApolloProvider at App.tsx
 return (
@@ -1253,6 +1254,83 @@ const renderItem = ({ item: photo }: { item: seeFeed_seeFeed }) => (
 
 ## Search.tsx => onPress navigate to PhotoScreen with photoId
 
-## ScrollView at `screens/Photo.tsx`: not pagination of data but when we sure the page would be overflowed
+## ScrollView at `screens/Photo.tsx`:
+
+- what's different with flatlist?
+
+  - `ScrollView`: show overflown long page + pull to refresh function with `<RefreshControl>`
+  - `Flatlist`: refresh to pull down + pull up to load more
 
 - style with: contentContainerStyle
+
+## HOMEWORK: if fullView? show comment and form
+
+## HOMEWORK: notification, profile
+
+# #17.0 Modal Navigator (10:40)
+
+```
+touch screens/Upload.tsx
+```
+
+## Change page structure: LoggedInNav.tsx => TabsNav.tsx
+
+```js
+// structure schema
+<BigStack>
+  <Tabs>
+    <Stacks />
+  </Tabs>
+  <Upload />
+</BigStack>
+```
+
+```js
+cp navigators/LoggedInNav.tsx navigators/TabsNav.tsx
+// navigators/LoggedInNav.tsx
+const Stack = createStackNavigator();
+
+export default function LoggedInNav() {
+  return (
+    <Stack.Navigator headerMode="none" mode="modal">
+      <Stack.Screen name="Tabs" component={TabsNav} />
+      <Stack.Screen name="Upload" component={Upload} />
+    </Stack.Navigator>
+  );
+}
+```
+
+## Tabnav.`listeners` => `tabPress` => to use props, callback!
+
+- `mode: modal`: come from bottom
+
+# #17.1 Bottom Tabs Navigator (09:14)
+
+## Material Top Tabs Navigator
+
+```js
+npm install @react-navigation/material-top-tabs react-native-tab-view@^2.16.0
+
+// touch navigators/UploadNav.tsx
+<MaterialTopTab>
+  <StackedSelectPhoto /> // stacked for more menu
+  <TakePhoto /> // just camera
+</MaterialTopTab>
+
+// LoggedInNav.tsx
+      <Stack.Screen name="Upload" component={UploadNav} />
+```
+
+## Upload.tsx => SelectPhoto.tsx
+
+## TakePhoto
+
+```
+cp screens/SelectPhoto.tsx screens/TakePhoto.tsx
+```
+
+# #17.2 Select Photo part One (06:57)
+
+## styling `UploadNav.tsx` with `headerBackImage`
+
+## styling `SelectPhoto.tsx` : ready to use expo API
