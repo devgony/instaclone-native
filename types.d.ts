@@ -13,7 +13,7 @@ export type RootStackParamList = {
   Notifications;
   Likes;
   Comments;
-  Upload;
+  SelectPhoto;
 };
 
 export type Props<RouteName extends keyof RootStackParamList> = {

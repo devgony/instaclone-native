@@ -1334,3 +1334,138 @@ cp screens/SelectPhoto.tsx screens/TakePhoto.tsx
 ## styling `UploadNav.tsx` with `headerBackImage`
 
 ## styling `SelectPhoto.tsx` : ready to use expo API
+
+# #17.3 Select Photo part Two (12:05)
+
+## Media Library of expo
+
+```
+expo install expo-media-library
+```
+
+## Get permission + Get Photo
+
+```js
+const getPermissions = async () => {
+  const { accessPrivileges, canAskAgain } =
+    await MediaLibrary.getPermissionsAsync();
+  if (accessPrivileges === "none" && canAskAgain) {
+    const { accessPrivileges } = await MediaLibrary.requestPermissionsAsync();
+    if (accessPrivileges !== "none") {
+      setOk(true);
+    }
+  } else if (accessPrivileges !== "none") {
+    setOk(true);
+  }
+};
+const getPhotos = async () => {
+  if (ok) {
+    const { assets: photos } = await MediaLibrary.getAssetsAsync();
+    setPhotos(photos);
+  }
+};
+```
+
+## HOMEWORK: select bar to choose albums
+
+# #17.4 Select Photo part Three (10:21)
+
+## loading error => getphotos() right after getting/checking permission not by state
+
+## empty str error: choose 1st photo as default + ternary
+
+## remove left,right margin => useWindowDimensions
+
+## Flatlist for photos
+
+```js
+const numColumns = 4;
+  const { width } = useWindowDimensions();
+  const choosePhoto = (uri: string) => {
+    setChosenPhoto(uri);
+  };
+  const renderItem = ({ item: photo }: { item: MediaLibrary.Asset }) => (
+    <ImageContainer onPress={() => choosePhoto(photo.uri)}>
+      <Image
+        source={{ uri: photo.uri }}
+        style={{ width: width / numColumns, height: 100 }}
+      />
+      <IconContainer>
+        <Ionicons name="checkmark-circle" size={18} color="white" />
+      </IconContainer>
+    </ImageContainer>
+  );
+  return (
+    <Container>
+      <Top>
+        {chosenPhoto !== "" ? (
+          <Image
+            source={{ uri: chosenPhoto }}
+            style={{ width, height: "100%" }}
+          />
+        ) : null}
+      </Top>
+      <Bottom>
+        <FlatList
+          data={photos}
+          numColumns={numColumns}
+          keyExtractor={photo => photo.id}
+          renderItem={renderItem}
+        />
+```
+
+# #17.5 Select Photo part Four (06:30)
+
+## if chosen => colors.blue
+
+```js
+          color={photo.uri === chosenPhoto ? colors.blue : "white"}
+```
+
+## headerRight
+
+1. At Stack.Navigator
+
+```js
+// UploadNav.tsx
+<Tab.Screen name="Select">
+        {() => (
+          <Stack.Navigator
+            screenOptions={{
+              headerRight:
+```
+
+2. At `navigation.setOptions` (we did)
+
+```js
+// SelectPhoto.tsx
+navigation.setOptions({
+  headerRight: HeaderRight,
+});
+```
+
+# #17.6 Take Photo part One (13:05)
+
+```
+expo install expo-camera
+```
+
+## make user camera takes `flex: 1`
+
+```js
+// TakePhoto.tsx
+export default function TakePhoto() {
+  const [ok, setOk] = useState(false);
+  const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
+  const getPermissions = async () => {
+    const { granted } = await Camera.requestPermissionsAsync();
+    setOk(granted);
+  };
+  useEffect(() => {
+    getPermissions();
+  }, []);
+  return (
+    <Container>
+      <Camera type={cameraType} style={{ flex: 1 }} />\
+...
+```

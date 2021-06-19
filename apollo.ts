@@ -27,8 +27,8 @@ export const logUserOut = async () => {
 };
 
 const httpLink = createHttpLink({
-  // uri: "https://ninstaclone.loca.lt/graphql",
-  uri: "http://localhost:4001/graphql",
+  uri: "https://ninstaclone.loca.lt/graphql",
+  // uri: "http://localhost:4001/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
