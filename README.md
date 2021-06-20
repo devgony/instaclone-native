@@ -1469,3 +1469,55 @@ export default function TakePhoto() {
       <Camera type={cameraType} style={{ flex: 1 }} />\
 ...
 ```
+
+# #17.7 Take Photo part Two (12:09)
+
+```js
+expo install @react-native-community/slider
+
+// TakePhoto.tsx
+<SliderContainer>
+          <Slider
+            style={{ width: 200, height: 20 }}
+            minimumValue={0}
+            maximumValue={1}
+            minimumTrackTintColor="#FFFFFF"
+            maximumTrackTintColor="rgba(255, 255, 255, 0.5)"
+            onValueChange={onZoomValueChange}
+          />
+        </SliderContainer>
+```
+
+## pictureSize only for android?
+
+# #17.8 Take Photo part Three (08:28)
+
+## flash off, auto, on
+
+- how to handle ternary if there is no icon?
+
+```js
+<Ionicons
+  size={30}
+  color="white"
+  name={
+    flashMode === Camera.Constants.FlashMode.off
+      ? "flash-off"
+      : flashMode === Camera.Constants.FlashMode.on
+      ? "flash"
+      : flashMode === Camera.Constants.FlashMode.auto
+      ? "eye"
+      : "md-warning"
+  }
+/>
+```
+
+## add X to camera + navigation
+
+## delete status bar
+
+- but what for at `SelectPhoto.tsx`?
+
+```js
+<StatusBar hidden={true} />
+```

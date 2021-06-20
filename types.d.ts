@@ -14,6 +14,8 @@ export type RootStackParamList = {
   Likes;
   Comments;
   SelectPhoto;
+  TakePhoto;
+  Tabs;
 };
 
 export type Props<RouteName extends keyof RootStackParamList> = {
