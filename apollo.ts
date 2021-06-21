@@ -8,6 +8,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login_login } from "./__generated__/login";
 import { setContext } from "@apollo/client/link/context";
 import { offsetLimitPagination } from "@apollo/client/utilities";
+import { onError } from "@apollo/client/link/error";
+import { createUploadLink } from "apollo-upload-client";
 
 export const isLoggedInVar = makeVar(false);
 export const tokenVar = makeVar("");
@@ -26,8 +28,8 @@ export const logUserOut = async () => {
   tokenVar("");
 };
 
-const httpLink = createHttpLink({
-  uri: "https://ninstaclone.loca.lt/graphql",
+const uploadHttpLink = createUploadLink({
+  uri: "http://ninstaclone-henry.loca.lt/graphql",
   // uri: "http://localhost:4001/graphql",
 });
 
@@ -38,6 +40,15 @@ const authLink = setContext((_, { headers }) => {
       token: tokenVar(),
     },
   };
+});
+
+const onErrorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    console.log(`GraphQL Error`, graphQLErrors);
+  }
+  if (networkError) {
+    console.log("Network Error", networkError);
+  }
 });
 
 export const cache = new InMemoryCache({
@@ -51,7 +62,7 @@ export const cache = new InMemoryCache({
 });
 
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: authLink.concat(onErrorLink).concat(uploadHttpLink),
   cache,
 });
 

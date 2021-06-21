@@ -66,7 +66,13 @@ export default function SelectPhoto({ navigation }: Props<"SelectPhoto">) {
     }
   };
   const HeaderRight = () => (
-    <TouchableOpacity>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("UploadForm", {
+          file: chosenPhoto,
+        })
+      }
+    >
       <HeaderRightText>Next</HeaderRightText>
     </TouchableOpacity>
   );
@@ -77,7 +83,7 @@ export default function SelectPhoto({ navigation }: Props<"SelectPhoto">) {
     navigation.setOptions({
       headerRight: HeaderRight,
     });
-  }, []);
+  }, [chosenPhoto]);
   const numColumns = 4;
   const { width } = useWindowDimensions();
   const choosePhoto = (uri: string) => {
@@ -100,7 +106,7 @@ export default function SelectPhoto({ navigation }: Props<"SelectPhoto">) {
   );
   return (
     <Container>
-      <StatusBar />
+      <StatusBar hidden={false} />
       <Top>
         {chosenPhoto !== "" ? (
           <Image

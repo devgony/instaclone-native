@@ -1521,3 +1521,240 @@ expo install @react-native-community/slider
 ```js
 <StatusBar hidden={true} />
 ```
+
+# #17.9 Take Photo part Four (07:06)
+
+## create ref
+
+```js
+const camera = useRef < Camera > null;
+```
+
+## should wait till camera is ready (cb from camera)
+
+- onCameraReady => setCameraReady => cameraReady => takePhoto
+- quality:1 (max) exif: extra info
+
+```js
+const takePhoto = async () => {
+  if (camera.current && cameraReady) {
+    const photo = await camera.current.takePictureAsync({
+      quality: 1,
+      exif: true,
+    });
+    console.log(photo);
+  }
+};
+```
+
+# #17.10 Take Photo part Five (12:14)
+
+```
+import * as MediaLibrary from "expo-media-library";
+```
+
+## cache => filesystem
+
+## createAssetAsync(localUri) VS saveToLibraryAsync(localUri)
+
+### createAssetAsync(localUri)
+
+- return assets-library
+- can upload photo from returned asset
+
+```js
+// TakePhoto.tsx
+const asset = await MediaLibrary.createAssetAsync(uri); // save to filesystem
+```
+
+### saveToLibraryAsync(localUri)
+
+- does not return asset
+- should upload photo from `cache`
+
+## show preview screen
+
+```js
+// TakePhoto.tsx
+        <Image source={{ uri: takenPhoto }} style={{ flex: 1 }} />
+...
+          <PhotoAction onPress={onDismiss}>
+```
+
+## `UploadNav.tsx`: change take tab to the first
+
+# #17.11 Take Photo part Six (06:56)
+
+## Alert to save or upload photo
+
+- can use alert("") but less property => use Alert.alert(title, text, [options])
+- style: destructive
+
+```js
+const onUpload = () => {
+  Alert.alert("Save photo?", "Save photo & upload or just upload", [
+    {
+      text: "Save & Upload",
+      onPress: () => goToUpload(true),
+    },
+    {
+      text: "Just Upload",
+      onPress: () => goToUpload(false),
+      style: "destructive",
+    },
+  ]);
+};
+```
+
+# #17.12 Upload Screen part One (12:01)
+
+```
+touch screens/UploadForm.tsx
+```
+
+## `useIsFocused` => only if focues, turn on camera and hide statuf bar
+
+```js
+// TakePhoto.tsx
+const isFocused = useIsFocused();
+return isFocused ? (
+  <Container>...</Container>
+) : (
+  <View style={{ flex: 1, backgroundColor: "black" }}></View>
+);
+```
+
+## Add UploadForm stack to LoggedInNav
+
+## Add nav to UploadForm at TakePhoto, SelectPhoto
+
+## LoggedInNav has no header => individual headerShown: false to Tabs and Upload but UploadForm has header
+
+# #17.13 Upload Screen part Two (12:06)
+
+## add chosenPhoto to useEffect dependency
+
+### chosenPhoto changed => redefined HeaderRight => new props to UploadForm
+
+```js
+useEffect(() => {
+  navigation.setOptions({
+    headerRight: HeaderRight,
+  });
+}, [chosenPhoto]);
+
+const HeaderRight = () => (
+  <TouchableOpacity
+    onPress={() =>
+      navigation.navigate("UploadForm", {
+        file: chosenPhoto,
+      })
+    }
+  >
+    <HeaderRightText>Next</HeaderRightText>
+  </TouchableOpacity>
+);
+```
+
+# #17.14 Upload Screen part Three (13:47)
+
+## FEED_PHOTO to fragments.ts
+
+## ReactNative File
+
+```js
+npm i apollo-upload-client
+npm i --save-dev @types/apollo-upload-client
+const onValid: SubmitHandler<{ caption: string }> = ({ caption }) => {
+    const file = new ReactNativeFile({
+      uri: route.params?.file,
+      name: `1.jpg`,
+      type: "image/jpeg",
+    });
+    uploadPhotoMutation({
+      variables: {
+        caption,
+        file,
+      },
+    });
+  };
+```
+
+## httpLink is the terminating Link
+
+```js
+const onErrorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    console.log(`GraphQL Error`, graphQLErrors);
+  }
+  if (networkError) {
+    console.log("Network Error", networkError);
+  }
+});
+...
+const client = new ApolloClient({
+  link: authLink.concat(onErrorLink).concat(httpLink),
+  cache,
+});
+```
+
+# #17.15 Upload Screen part Four (10:42)
+
+## createUploadLink at `apollo.ts`
+
+## don't need fake object, it's already on the cache
+
+## modify ROOT_QUERY => no need offset
+
+- apollo.ts => offsetLimitPagination.keyargument:false
+
+## nav to Tabs
+
+```js
+const updateUploadPhoto: MutationUpdaterFn<uploadPhoto> = (cache, result) => {
+  if (result.data?.uploadPhoto?.id) {
+    cache.modify({
+      id: "ROOT_QUERY",
+      fields: {
+        seeFeed(prev) {
+          return [result.data?.uploadPhoto, ...prev];
+        },
+      },
+    });
+    navigation.navigate("Tabs");
+  }
+};
+```
+
+```
+If you're the developer...
+You and other visitors will only see this page from a standard web browser once per IP every 7 days.
+
+Webhook, IPN, and other non-browser requests "should" be directly tunnelled to your localhost. If your webhook/ipn provider happens to send requests using a real browser user-agent header, those requests will unfortunately also be blocked / be forced to see this tunnel reminder page. FYI, this page returns a 401 HTTP Status.
+
+Options to bypass this page:
+Set and send a Bypass-Tunnel-Reminder request header (its value can be anything).
+or, Set and send a custom / non-standard browser User-Agent request header.
+```
+
+# #18.0 Messages Navigator (10:33)
+
+```js
+touch navigators/MessagesNav.tsx
+touch screens/Rooms.tsx
+touch screens/Room.tsx
+```
+
+## add MessagesNav to loggedInNav
+
+## add paper-plane button at `Feed.tsx` navigating to Messages
+
+# #18.1 Rooms Screen part One (11:51)
+
+## ROOM_FRAGMENT to fragments.ts
+
+## MessagesNav > Rooms > Room
+
+# #18.2 Rooms Screen part Two (11:49)
+
+## filter me, styling avatar, unreadTotal, unreadDot

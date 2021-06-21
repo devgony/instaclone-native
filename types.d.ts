@@ -16,6 +16,8 @@ export type RootStackParamList = {
   SelectPhoto;
   TakePhoto;
   Tabs;
+  UploadForm;
+  Messages;
 };
 
 export type Props<RouteName extends keyof RootStackParamList> = {
