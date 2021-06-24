@@ -1758,3 +1758,64 @@ touch screens/Room.tsx
 # #18.2 Rooms Screen part Two (11:49)
 
 ## filter me, styling avatar, unreadTotal, unreadDot
+
+# #18.3 Room Screen part One (11:54)
+
+## D&Q from Rooms to RoomItem => nav to Room
+
+```js
+mkdir components/rooms
+touch components/rooms/RoomItem.tsx
+```
+
+# #18.4 Room Screen part Two (09:20)
+
+## KeyboardAvoidingView
+
+## FlatList inverted
+
+```js
+// Screens/Room.tsx
+<FlatList
+          inverted
+          style={{ width: "100%" }}
+          data={data?.seeRoom?.messages as seeRoom_seeRoom_messages[]}
+          keyExtractor={message => "" + message.id}
+          renderItem={renderItem}
+        />
+```
+
+# #18.5 Room Screen part Three (09:09)
+
+## Rooms styling
+
+## If username is not opponent, move to right => `what if there are 3 people in room?`
+
+## HOMEWORK: add computed isMine
+
+```js
+// screens/Room.tsx
+const MessageContainer = styled.View<{ outGoing: boolean }>`
+  padding: 0px 10px;
+  flex-direction: ${props => (props.outGoing ? "row-reverse" : "row")};
+  align-items: flex-end;
+`;
+...
+<MessageContainer
+      outGoing={message.user.username !== route?.params?.talkingTo?.username}
+>
+```
+
+# #18.6 Room Screen part Four (14:30)
+
+## onMutation ok => updateSendMessage => cache.writeFragment
+
+# #18.7 Room Screen part Five (07:17)
+
+## To update cache => `Should get main id from query`
+
+## clear message with setValues `after` getting value and use watch() at Text
+
+## when load page first, initial position should show last message
+
+## why did you remove persistCache?
