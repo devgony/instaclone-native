@@ -1889,6 +1889,7 @@ useEffect(() => {
         variables: {
           id: route?.params?.id,
         },
+        // updateQuery......
       });
     }
   }, [data]);
@@ -1909,6 +1910,82 @@ const wsLink = new WebSocketLink({
 
 ## Why did you remove `reconnect: true,` from `apollo.ts`?
 
+## My updateQuery of subscriptToMore
+
+- Looks better but is it okay to compare existingMessage with id?
+
+```js
+// screens/Room.tsx
+const updateQuery: UpdateQueryFn<seeRoom, roomUpdatesVariables, roomUpdates> =
+    (prevQuery, options) => {
+      const message = options.subscriptionData.data.roomUpdates;
+      const existingMessage = prevQuery?.seeRoom?.messages?.find(
+        aMessage => aMessage?.id === message?.id
+      );
+      if (message?.id && !existingMessage) {
+        return {
+          seeRoom: {
+            ...prevQuery.seeRoom,
+            messages: [message, ...(prevQuery.seeRoom?.messages ?? [])],
+          },
+        } as seeRoom;
+      } else {
+        return prevQuery;
+      }
+    };
+```
+
+## Nico's cache way => cuz UpdateQueryFn should return Tdata, gets Lint warning
+
+- If this way is not fater, choose my way
+
+```js
+// screens/Room.tsx
+const client = useApolloClient();
+const updateQuery: UpdateQueryFn<seeRoom, roomUpdatesVariables, roomUpdates> = (
+  prevQuery,
+  options
+) => {
+  const message = options.subscriptionData.data.roomUpdates;
+  if (message?.id) {
+    const incomingMessage = client.cache.writeFragment({
+      fragment: gql`
+        fragment NewMessage on Message {
+          id
+          payload
+          user {
+            username
+            avatar
+          }
+          read
+        }
+      `,
+      data: message,
+    });
+    client.cache.modify({
+      id: `Room:${route?.params?.id}`,
+      fields: {
+        messages(prev) {
+          const existingMessage = prev.find(
+            (aMessage: Reference) => aMessage.__ref === incomingMessage?.__ref
+          );
+          if (existingMessage) {
+            return prev;
+          }
+          return [incomingMessage, ...prev];
+        },
+      },
+    });
+  }
+};
+```
+
 # #18.12 Subscriptions part Four (10:03)
 
+## Compare id(my way) or cache's \_\_ref(nico's way) to prevent duplication
+
+### this limitation of apollo pubsub => try redis on product
+
 ## HOMEWORK: change read dot and unReadCount 1
+
+# #18.13 Conclusions (03:54)

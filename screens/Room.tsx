@@ -173,46 +173,21 @@ export default function Room({ route, navigation }: Props<"Room">) {
   const updateQuery: UpdateQueryFn<seeRoom, roomUpdatesVariables, roomUpdates> =
     (prevQuery, options) => {
       const message = options.subscriptionData.data.roomUpdates;
-      if (message?.id) {
-        const incomingMessage = client.cache.writeFragment({
-          fragment: gql`
-            fragment NewMessage on Message {
-              id
-              payload
-              user {
-                username
-                avatar
-              }
-              read
-            }
-          `,
-          data: message,
-        });
-        client.cache.modify({
-          id: `Room:${route?.params?.id}`,
-          fields: {
-            messages(prev) {
-              const existingMessage = prev.find(
-                (aMessage: Reference) =>
-                  aMessage.__ref === incomingMessage?.__ref
-              );
-              if (existingMessage) {
-                return prev;
-              }
-              return [incomingMessage, ...prev];
-            },
+      const existingMessage = prevQuery?.seeRoom?.messages?.find(
+        aMessage => aMessage?.id === message?.id
+      );
+      if (message?.id && !existingMessage) {
+        return {
+          seeRoom: {
+            ...prevQuery.seeRoom,
+            messages: [message, ...(prevQuery.seeRoom?.messages ?? [])],
           },
-        });
-        // return Object.assign({}, prevQuery, {
-        //   entry: {
-        //     messages: [message, ...(prevQuery.seeRoom?.messages ?? [])],
-        //   },
-        // });
+        } as seeRoom;
+      } else {
+        return prevQuery;
       }
-      //   else {
-      //   return prevQuery;
-      // }
     };
+
   useEffect(() => {
     if (data?.seeRoom) {
       subscribeToMore<roomUpdates, roomUpdatesVariables>({
@@ -224,6 +199,7 @@ export default function Room({ route, navigation }: Props<"Room">) {
       });
     }
   }, [data]);
+
   const onValid: SubmitHandler<{ message: sendMessageVariables["payload"] }> =
     ({ message: payload }) => {
       if (!sendingMessage) {
@@ -235,14 +211,17 @@ export default function Room({ route, navigation }: Props<"Room">) {
         });
       }
     };
+
   useEffect(() => {
     register("message", { required: true });
   }, [register]);
+
   useEffect(() => {
     navigation.setOptions({
       title: `${route?.params?.talkingTo?.username}`,
     });
   }, []);
+
   const renderItem: ListRenderItem<seeRoom_seeRoom_messages> = ({
     item: message,
   }) => (
@@ -255,6 +234,7 @@ export default function Room({ route, navigation }: Props<"Room">) {
       <Message>{message.payload}</Message>
     </MessageContainer>
   );
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: "black" }}
