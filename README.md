@@ -1819,3 +1819,96 @@ const MessageContainer = styled.View<{ outGoing: boolean }>`
 ## when load page first, initial position should show last message
 
 ## why did you remove persistCache?
+
+# #18.8 Room Screen part Six (09:29)
+
+## invert again.. but two way
+
+1. <`What i did`> orderby desc from backend computed field messages
+2. <`What nico did`> reverse at frontend => returned array from mutation is immutable => make new array
+
+```js
+// screens/Room.tsx
+const messages = [...(data?.seeRoom?.messages ?? [])]; // Nullish coalescing operator
+messages.reverse();
+```
+
+## Send msg with onPress ionicons of `send`
+
+# #18.9 Subscriptions part One (07:36)
+
+## install transport ws
+
+### functional programming of splitLink: true? wsLink, else httpLink
+
+```js
+npm install subscriptions-transport-ws
+
+// apollo.ts
+const wsLink = new WebSocketLink({
+  uri: "http://ninstaclone-henry.loca.lt/graphql",
+  options: {
+    reconnect: true,
+    connectionParams: {
+      token: tokenVar(),
+    },
+  },
+});
+
+const httpLinks = authLink.concat(onErrorLink).concat(uploadHttpLink);
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    );
+  },
+  wsLink,
+  httpLinks
+);
+
+const client = new ApolloClient({
+  link: splitLink,
+```
+
+# #18.10 Subscriptions part Two (08:57)
+
+## Define subs: load always like useQuery? => we should update every time there is new message => Get subscribeToMore from useQuery
+
+### if there is data, start subscription
+
+```js
+const { data, loading, subscribeToMore } = useQuery<seeRoom>(ROOM_QUERY, {
+...
+useEffect(() => {
+    if (data?.seeRoom) {
+      subscribeToMore({
+        document: ROOM_UPDATES,
+        variables: {
+          id: route?.params?.id,
+        },
+      });
+    }
+  }, [data]);
+```
+
+## Wait to get token till login: connectionParams can be function intead of object
+
+```js
+// apollo.ts
+const wsLink = new WebSocketLink({
+...
+    connectionParams: () => ({
+      token: tokenVar(),
+    }),
+```
+
+# #18.11 Subscriptions part Three (08:25)
+
+## Why did you remove `reconnect: true,` from `apollo.ts`?
+
+# #18.12 Subscriptions part Four (10:03)
+
+## HOMEWORK: change read dot and unReadCount 1

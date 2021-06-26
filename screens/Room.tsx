@@ -1,10 +1,21 @@
-import { gql, MutationUpdaterFn, useMutation, useQuery } from "@apollo/client";
+import {
+  gql,
+  MutationUpdaterFn,
+  Reference,
+  useApolloClient,
+  useMutation,
+  useQuery,
+} from "@apollo/client";
 import React, { useEffect } from "react";
 import { FlatList, KeyboardAvoidingView } from "react-native";
 import { ListRenderItem, Text, View } from "react-native";
 import styled from "styled-components/native";
 import { Props } from "../types";
-import { seeRoom, seeRoom_seeRoom_messages } from "../__generated__/seeRoom";
+import {
+  seeRoom,
+  seeRoomVariables,
+  seeRoom_seeRoom_messages,
+} from "../__generated__/seeRoom";
 import ScreenLayout from "../components/ScreenLayout";
 import { SubmitHandler, useForm } from "react-hook-form";
 import useMe from "../hooks/useMe";
@@ -13,6 +24,27 @@ import {
   sendMessageVariables,
   sendMessage_sendMessage,
 } from "../__generated__/sendMessage";
+import { Ionicons } from "@expo/vector-icons";
+import { logUserOut } from "../apollo";
+import { UpdateQueryFn } from "@apollo/client/core/watchQueryOptions";
+import {
+  roomUpdates,
+  roomUpdatesVariables,
+} from "../__generated__/roomUpdates";
+
+const ROOM_UPDATES = gql`
+  subscription roomUpdates($id: Int!) {
+    roomUpdates(id: $id) {
+      id
+      payload
+      user {
+        username
+        avatar
+      }
+      read
+    }
+  }
+`;
 
 const SEND_MESSAGE_MUTATION = gql`
   mutation sendMessage($payload: String!, $roomId: Int, $userId: Int) {
@@ -64,13 +96,23 @@ const Message = styled.Text`
 `;
 
 const TextInput = styled.TextInput`
-  margin-bottom: 50px;
-  width: 95%;
   border: 1px solid rgba(255, 255, 255, 0.5);
   color: white;
   padding: 10px 20px;
   border-radius: 1000px;
+  width: 90%;
+  margin-right: 10px;
 `;
+
+const InputContainer = styled.View`
+  width: 95%;
+  margin-bottom: 50px;
+  margin-top: 25px;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const SendButton = styled.TouchableOpacity``;
 
 export default function Room({ route, navigation }: Props<"Room">) {
   const { data: meData } = useMe();
@@ -107,7 +149,7 @@ export default function Room({ route, navigation }: Props<"Room">) {
         id: `Room:${route?.params?.id}`,
         fields: {
           messages(prev) {
-            return [...prev, messageFragment];
+            return [messageFragment, ...prev];
           },
         },
       });
@@ -119,11 +161,69 @@ export default function Room({ route, navigation }: Props<"Room">) {
   >(SEND_MESSAGE_MUTATION, {
     update: updateSendMessage,
   });
-  const { data, loading } = useQuery<seeRoom>(ROOM_QUERY, {
+  const { data, loading, subscribeToMore } = useQuery<
+    seeRoom,
+    seeRoomVariables
+  >(ROOM_QUERY, {
     variables: {
       id: route?.params?.id,
     },
   });
+  const client = useApolloClient();
+  const updateQuery: UpdateQueryFn<seeRoom, roomUpdatesVariables, roomUpdates> =
+    (prevQuery, options) => {
+      const message = options.subscriptionData.data.roomUpdates;
+      if (message?.id) {
+        const incomingMessage = client.cache.writeFragment({
+          fragment: gql`
+            fragment NewMessage on Message {
+              id
+              payload
+              user {
+                username
+                avatar
+              }
+              read
+            }
+          `,
+          data: message,
+        });
+        client.cache.modify({
+          id: `Room:${route?.params?.id}`,
+          fields: {
+            messages(prev) {
+              const existingMessage = prev.find(
+                (aMessage: Reference) =>
+                  aMessage.__ref === incomingMessage?.__ref
+              );
+              if (existingMessage) {
+                return prev;
+              }
+              return [incomingMessage, ...prev];
+            },
+          },
+        });
+        // return Object.assign({}, prevQuery, {
+        //   entry: {
+        //     messages: [message, ...(prevQuery.seeRoom?.messages ?? [])],
+        //   },
+        // });
+      }
+      //   else {
+      //   return prevQuery;
+      // }
+    };
+  useEffect(() => {
+    if (data?.seeRoom) {
+      subscribeToMore<roomUpdates, roomUpdatesVariables>({
+        document: ROOM_UPDATES,
+        variables: {
+          id: route?.params?.id,
+        },
+        updateQuery,
+      });
+    }
+  }, [data]);
   const onValid: SubmitHandler<{ message: sendMessageVariables["payload"] }> =
     ({ message: payload }) => {
       if (!sendingMessage) {
@@ -163,21 +263,39 @@ export default function Room({ route, navigation }: Props<"Room">) {
     >
       <ScreenLayout loading={loading}>
         <FlatList
-          style={{ width: "100%", paddingVertical: 10 }}
+          inverted
+          style={{ width: "100%", marginVertical: 10 }}
           ItemSeparatorComponent={() => <View style={{ height: 20 }}></View>}
           data={data?.seeRoom?.messages as seeRoom_seeRoom_messages[]}
           keyExtractor={message => "" + message.id}
           renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
         />
-        <TextInput
-          placeholderTextColor="rgba(255, 255, 255, 0.5)"
-          placeholder="Write a message..."
-          returnKeyLabel="Send Message"
-          returnKeyType="send"
-          onChangeText={text => setValue("message", text)}
-          onSubmitEditing={handleSubmit(onValid)}
-          value={watch("message")}
-        />
+        <InputContainer>
+          <TextInput
+            placeholderTextColor="rgba(255, 255, 255, 0.5)"
+            placeholder="Write a message..."
+            returnKeyLabel="Send Message"
+            returnKeyType="send"
+            onChangeText={text => setValue("message", text)}
+            onSubmitEditing={handleSubmit(onValid)}
+            value={watch("message")}
+          />
+          <SendButton
+            onPress={handleSubmit(onValid)}
+            disabled={!Boolean(watch("message"))}
+          >
+            <Ionicons
+              name="send"
+              color={
+                !Boolean(watch("message"))
+                  ? "rgba(255, 255, 255, 0.5)"
+                  : "white"
+              }
+              size={22}
+            />
+          </SendButton>
+        </InputContainer>
       </ScreenLayout>
     </KeyboardAvoidingView>
   );
