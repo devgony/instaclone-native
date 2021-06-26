@@ -5,7 +5,8 @@ module.exports = {
     service: {
       name: "instaclone-backend",
       // url: "http://localhost:4001/graphql",
-      url: "https://ninstaclone-henry.loca.lt/graphql",
+      // url: "https://ninstaclone-henry.loca.lt/graphql",
+      uri: "https://instaclone-backend-henry.herokuapp.com/graphql",
     },
   },
 };

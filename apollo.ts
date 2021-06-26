@@ -34,12 +34,14 @@ export const logUserOut = async () => {
 };
 
 const uploadHttpLink = createUploadLink({
-  uri: "http://ninstaclone-henry.loca.lt/graphql",
+  uri: "https://instaclone-backend-henry.herokuapp.com/graphql",
+  // uri: "http://ninstaclone-henry.loca.lt/graphql",
   // uri: "http://localhost:4001/graphql",
 });
 
 const wsLink = new WebSocketLink({
-  uri: "http://ninstaclone-henry.loca.lt/graphql",
+  uri: "ws://instaclone-backend-henry.herokuapp.com/graphql",
+  // uri: "ws://ninstaclone-henry.loca.lt/graphql",
   options: {
     connectionParams: () => ({
       token: tokenVar(),

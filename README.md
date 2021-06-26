@@ -1846,7 +1846,7 @@ npm install subscriptions-transport-ws
 
 // apollo.ts
 const wsLink = new WebSocketLink({
-  uri: "http://ninstaclone-henry.loca.lt/graphql",
+  uri: "ws://ninstaclone-henry.loca.lt/graphql",
   options: {
     reconnect: true,
     connectionParams: {
@@ -1989,3 +1989,28 @@ const updateQuery: UpdateQueryFn<seeRoom, roomUpdatesVariables, roomUpdates> = (
 ## HOMEWORK: change read dot and unReadCount 1
 
 # #18.13 Conclusions (03:54)
+
+# #19.6 Building the App (12:15)
+
+## add
+
+```js
+// app.json
+"ios": {
+      "bundleIdentifier": "co.henry.instaclone",
+      "buildNumber": "1.0.0",
+    },
+"android": {
+  "package": "co.henry.instaclone",
+  "versionCode": 1,
+```
+
+## deploy
+
+```
+expo build:ios
+archive: Deploy to appstore (windows)
+simulator: Macos
+
+expo build:android
+```
