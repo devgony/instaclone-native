@@ -2005,12 +2005,81 @@ const updateQuery: UpdateQueryFn<seeRoom, roomUpdatesVariables, roomUpdates> = (
   "versionCode": 1,
 ```
 
-## deploy
+## Deploy
 
 ```
 expo build:ios
-archive: Deploy to appstore (windows)
-simulator: Macos
+  archive: Deploy to appstore (windows)
+  simulator: Macos
 
 expo build:android
+  apk
+    generate new keystore
+  app-bundle
 ```
+
+- https://expo.io/turtle-status
+
+## Over the Air update: expo publish => go server => fetch new js from server
+
+## Release Channels - control beta test
+
+- expo publish --release-channel <your-channel>
+- expo build:ios --release-channel <your-channel>
+
+## some does not work with OTA
+
+# #19.7 Building Conclusions (04:54)
+
+## make size half
+
+```js
+expo build:android -t app-bundle
+```
+
+- increase buildNumber or versionCode
+
+# #20.0 Ejecting from Expo (13:33)
+
+- backup whole project directory: eject is one way
+- expo eject
+- need to install additional package
+- expo run ios
+- expo doctor
+- install android studio
+
+# #20.1 Ejecting from Expo part Two (11:37)
+
+- android will get error at first
+- ios crashes as well when pressing photo tab
+- info.plist => permission
+
+```js
+cd ios
+npx pod-install
+```
+
+- crop picker
+- android.build.gradle
+- android login fali: 10.0.2.2 is localhost
+
+# #20.2 Ejecting Conclusions (08:39)
+
+- install storage ~
+- install unimodule
+
+# #20.3 React Native CLI (11:36)
+
+## RN init
+
+```
+npx react-native <projectName>
+npx react-native run-ios
+npx react-native init <projectName>
+```
+
+## create-react-natvie-app: best option to choose
+
+- RN init + expo preconfigure library
+
+# #20.4 Conclusions (01:31)
